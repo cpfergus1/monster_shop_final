@@ -31,15 +31,16 @@ class Item < ApplicationRecord
     reviews.average(:rating)
   end
 
-  def add_discount(quantity)
-    if discounts.where('items_required <= ?', quantity).empty?
-      0
-    else
-      discounts.where('items_required <= ?', quantity).order(discount: :DESC).first.discount
-    end
+  def find_discount(quantity)
+    discounts.where('items_required <= ?', quantity).order(discount: :DESC).first
   end
 
   def price_with_discount(quantity)
-    price * (1 - add_discount(quantity)/100)
+    discount_object = find_discount(quantity)
+    if discount_object.nil?
+      price
+    else
+      price * (1 - discount_object.discount/100)
+    end
   end
 end
