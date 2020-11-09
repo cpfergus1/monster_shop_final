@@ -46,11 +46,11 @@ RSpec.describe Item do
     end
 
     it '.add_discount' do
-      expect(@ogre.add_discount(9)).to eq(5)
-      expect(@ogre.add_discount(10)).to eq(7)
-      expect(@ogre.add_discount(20)).to eq(15)
-      expect(@ogre.add_discount(2)).to eq(0)
-      expect(@hippo.add_discount(2)).to eq(0)
+      expect(@ogre.find_discount(9).discount).to eq(5)
+      expect(@ogre.find_discount(10).discount).to eq(7)
+      expect(@ogre.find_discount(20).discount).to eq(15)
+      expect(@ogre.find_discount(2)).to eq(nil)
+      expect(@hippo.find_discount(2)).to eq(nil)
     end
 
     it '.price_with_discount' do
