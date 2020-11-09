@@ -63,28 +63,5 @@ RSpec.describe Cart do
 
       expect(@cart.count_of(@giant.id)).to eq(1)
     end
-
-    it '.price_with_discount' do
-      @megan.discounts.create!(name: 'Bulk discount',
-                               items_required: 5,
-                               discount: 5.0)
-      @megan.discounts.create!(name: 'Bulk discount',
-                               items_required: 10,
-                               discount: 7.0)
-      @megan.discounts.create!(name: 'Bulk discount',
-                               items_required: 20,
-                               discount: 10.0)
-      @megan.discounts.create!(name: 'Bulk discount',
-                               items_required: 20,
-                               discount: 15.0)
-      @cart = Cart.new({
-        @ogre.id.to_s => 9,
-        @giant.id.to_s => 22,
-        @hippo.id.to_s => 30
-        })
-      expect(@cart.price_with_discount(@ogre.id)).to eq(19)
-      expect(@cart.price_with_discount(@giant.id)).to eq(42.5)
-      expect(@cart.price_with_discount(@hippo.id)).to eq(50)
-    end
   end
 end
