@@ -35,6 +35,34 @@ RSpec.describe 'Create Order' do
         expect(page).to have_link(order.id)
       end
     end
+    it 'bulk discount price is passed into the order' do
+      @ogre.update(inventory: 50)
+      @megan.discounts.create!(name: 'Big 15 Discount',
+                               items_required: 40,
+                               discount: 15.0)
+      visit item_path(@ogre)
+      click_button 'Add to Cart'
+
+      visit '/cart'
+
+      within "#item-#{@ogre.id}" do
+        40.times {click_button('More of This!')}
+      end
+
+      click_button 'Check Out'
+
+      order = Order.last
+
+      expect(current_path).to eq('/profile/orders')
+      expect(page).to have_content('Order created successfully!')
+      expect(page).to have_link('Cart: 0')
+
+      within "#order-#{order.id}" do
+        expect(page).to have_link(order.id)
+        expect(page).to have_content("41 items")
+        expect(page).to have_content("Total: $697.00")
+      end
+    end
   end
 
   describe 'As a Visitor' do
