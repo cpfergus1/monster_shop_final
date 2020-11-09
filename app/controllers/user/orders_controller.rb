@@ -16,7 +16,7 @@ class User::OrdersController < ApplicationController
         order.order_items.create({
           item: item,
           quantity: cart.count_of(item.id),
-          price: item.price_with_discount
+          price: item.price_with_discount(cart.count_of(item.id))
           })
       end
     session.delete(:cart)
