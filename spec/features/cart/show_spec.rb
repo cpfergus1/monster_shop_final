@@ -168,5 +168,133 @@ RSpec.describe 'Cart Show Page' do
         expect(page).to have_content("Cart: 0")
       end
     end
+    describe 'when I have multiple items, I can see my bulk discount applied' do
+      before :each do
+        @ogre.update(inventory: 50)
+        @hippo.update(inventory: 50)
+        @giant.update(inventory: 50)
+        @megan.discounts.create!(name: 'Big 5 Discount',
+                                 items_required: 10,
+                                 discount: 5.0)
+        @megan.discounts.create!(name: 'Big 10 Discount',
+                                 items_required: 20,
+                                 discount: 10.0)
+        @megan.discounts.create!(name: 'Big 15 Discount',
+                                 items_required: 40,
+                                 discount: 15.0)
+      end
+      it 'hit big 5 discount' do
+        visit item_path(@ogre)
+        click_button 'Add to Cart'
+        visit item_path(@hippo)
+        click_button 'Add to Cart'
+
+        visit '/cart'
+
+        within "#item-#{@hippo.id}" do
+          10.times {click_button('More of This!')}
+        end
+
+        within "#item-#{@ogre.id}" do
+          10.times {click_button('More of This!')}
+        end
+
+        within "#item-#{@ogre.id}" do
+          expect(page).to have_content("Big 5 Discount Applied!")
+          expect(page).to have_content("Price: $19.00")
+          expect(page).to have_content("Quantity: 11")
+          expect(page).to have_content("Subtotal: $209.00")
+        end
+
+        within "#item-#{@hippo.id}" do
+          expect(page).to_not have_content("Big 5 Discount Applied!")
+          expect(page).to have_content("Price: $50.00")
+          expect(page).to have_content("Quantity: 11")
+          expect(page).to have_content("Subtotal: $550.00")
+        end
+      end
+
+      it 'hit big 10 discount' do
+        visit item_path(@ogre)
+        click_button 'Add to Cart'
+        visit item_path(@hippo)
+        click_button 'Add to Cart'
+        visit item_path(@giant)
+        click_button 'Add to Cart'
+
+        visit '/cart'
+
+        within "#item-#{@hippo.id}" do
+          20.times {click_button('More of This!')}
+        end
+
+        within "#item-#{@ogre.id}" do
+          20.times {click_button('More of This!')}
+        end
+
+        within "#item-#{@ogre.id}" do
+          expect(page).to have_content("Big 10 Discount Applied!")
+          expect(page).to have_content("Price: $18.00")
+          expect(page).to have_content("Quantity: 21")
+          expect(page).to have_content("Subtotal: $378.00")
+        end
+
+        within "#item-#{@hippo.id}" do
+          expect(page).to_not have_content("Big 10 Discount Applied!")
+          expect(page).to have_content("Price: $50.00")
+          expect(page).to have_content("Quantity: 21")
+          expect(page).to have_content("Subtotal: $1,050.00")
+        end
+
+        within "#item-#{@giant.id}" do
+          expect(page).to_not have_content("Big 10 Discount Applied!")
+          expect(page).to have_content("Price: $50.00")
+          expect(page).to have_content("Quantity: 1")
+          expect(page).to have_content("Subtotal: $50.00")
+        end
+      end
+      it 'hit big 10 discount and big 15 discount' do
+        visit item_path(@ogre)
+        click_button 'Add to Cart'
+        visit item_path(@hippo)
+        click_button 'Add to Cart'
+        visit item_path(@giant)
+        click_button 'Add to Cart'
+
+        visit '/cart'
+
+        within "#item-#{@hippo.id}" do
+          20.times {click_button('More of This!')}
+        end
+
+        within "#item-#{@ogre.id}" do
+          40.times {click_button('More of This!')}
+        end
+        within "#item-#{@giant.id}" do
+          20.times {click_button('More of This!')}
+        end
+
+        within "#item-#{@ogre.id}" do
+          expect(page).to have_content("Big 15 Discount Applied!")
+          expect(page).to have_content("Price: $17.00")
+          expect(page).to have_content("Quantity: 41")
+          expect(page).to have_content("Subtotal: $697.00")
+        end
+
+        within "#item-#{@hippo.id}" do
+          expect(page).to_not have_content("Big 10 Discount Applied!")
+          expect(page).to have_content("Price: $50.00")
+          expect(page).to have_content("Quantity: 21")
+          expect(page).to have_content("Subtotal: $1,050.00")
+        end
+
+        within "#item-#{@giant.id}" do
+          expect(page).to have_content("Big 10 Discount Applied!")
+          expect(page).to have_content("Price: $45.00")
+          expect(page).to have_content("Quantity: 21")
+          expect(page).to have_content("Subtotal: $945.00")
+        end
+      end
+    end
   end
 end

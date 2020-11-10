@@ -1,0 +1,14 @@
+
+<%= form_with model: @discount, url: "/merchant/discounts/#{@discount.id}", local: true, method: :patch do |f| %>
+  <%= f.label :name %>
+  <%= f.text_field :name%> <br>
+
+
+  <%= f.label "Items Required for Discount" %>
+  <%= f.text_field :items_required %> <br>
+
+  <%= f.label "Discount Percentage" %>
+  <%= f.text_field :discount%> <br>
+
+  <%= f.submit('Update Discount') %>
+<% end %>
