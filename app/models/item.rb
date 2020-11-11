@@ -43,4 +43,13 @@ class Item < ApplicationRecord
       price * (1 - discount_object.discount/100)
     end
   end
+
+  def no_discount?(quantity)
+    find_discount(quantity).nil?
+  end
+
+  def discount_name(quantity)
+    find_discount(quantity).name
+  end
+
 end
